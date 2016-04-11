@@ -1,3 +1,6 @@
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -35,31 +38,37 @@ public class UserInput {
         }
     }
 
-    public static void doCalculations(){
+    public static void doCalculations() throws IOException{
         while(true) {
             int input = welcome();
-            double userNumber = scanNumber();
+
 
             boolean invalidInput = false;
 
             do {
                 switch (input) {
                     case 1:
+                        double userNumber = scanNumber();
                         currentValue = add(currentValue, userNumber);
                         break;
                     case 2:
+                        userNumber = scanNumber();
                         currentValue = subtract(currentValue, userNumber);
                         break;
                     case 3:
+                        userNumber = scanNumber();
                         currentValue = multiply(currentValue, userNumber);
                         break;
                     case 4:
+                        userNumber = scanNumber();
                         currentValue = divide(currentValue, userNumber);
                         break;
                     case 5:
+                        userNumber = scanNumber();
                         currentValue = exponent(currentValue, userNumber);
                         break;
                     case 6:
+                        userNumber = scanNumber();
                         currentValue = logarithm(currentValue, userNumber);
                         break;
                     case 7:
@@ -74,51 +83,62 @@ public class UserInput {
         }
     }
 
-    private static double clearCalculator() {
-        System.out.println("Current value set to 0.\n");
+    private static double clearCalculator() throws IOException {
+        System.out.println("Current value set to 0, and previous operations have been written to a text file.\n");
+        CalculatorFile.writeToFile();
         currentValue = 0.0;
         return currentValue;
     }
 
-    private static double logarithm(double currentValue, double input){
+    private static double logarithm(double currentValue, double input) throws IOException{
         double log = logOfBase(currentValue, input);
+        CalculatorFile.addToFile(currentValue, log, "logarithm");
         System.out.printf("Current value is now %s.\n", log);
         return log;
     }
 
-    private static double exponent(double currentValue, double input){
+    private static double exponent(double currentValue, double input) throws IOException{
         double pow = Math.pow(currentValue, input);
+        CalculatorFile.addToFile(currentValue, pow, "exponentiation");
         System.out.printf("Current value is now %s.\n", pow);
         return pow;
     }
 
-    private static double divide(double currentValue, double input) {
+    private static double divide(double currentValue, double input) throws IOException{
 
         if(input == 0){
             System.out.println("Error: can't divide by 0.");
             return currentValue;
         }
 
+        double valueStorage = currentValue;
         currentValue /= input;
+        CalculatorFile.addToFile(valueStorage, currentValue, "division");
 
         System.out.printf("Current value is now %s.\n", currentValue);
         return currentValue;
     }
 
-    private static double multiply(double currentValue, double input) {
+    private static double multiply(double currentValue, double input) throws IOException{
+        double valueStorage = currentValue;
         currentValue *= input;
+        CalculatorFile.addToFile(valueStorage, currentValue, "multiplication");
         System.out.printf("Current value is now %s.\n", currentValue);
         return currentValue;
     }
 
-    private static double subtract(double currentValue, double input) {
+    private static double subtract(double currentValue, double input) throws IOException{
+        double valueStorage = currentValue;
         currentValue -= input;
+        CalculatorFile.addToFile(valueStorage, currentValue, "subtraction");
         System.out.printf("Current value is now %s.\n", currentValue);
         return currentValue;
     }
 
-    private static double add(double currentValue, double input) {
+    private static double add(double currentValue, double input) throws IOException{
+        double valueStorage = currentValue;
         currentValue += input;
+        CalculatorFile.addToFile(valueStorage, currentValue, "addition");
         System.out.printf("Current value is now %s.\n", currentValue);
         return currentValue ;
     }
